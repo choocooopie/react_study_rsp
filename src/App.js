@@ -2,7 +2,6 @@ import { useState } from 'react';
 import './App.css';
 import Box from "./component/Box"
 
-//복습하기
 // 1. 박스 2개 (타이틀, 사진, 결과)
 // 2. 가위, 바위, 보 버튼이 있다.
 // 3. 버튼을 클릭하면 클릭한 값이 박스에 보임
@@ -13,35 +12,78 @@ import Box from "./component/Box"
 const choice = {
   rock:{
     name:"Rock",
-    img:"https://scienceresourcebox.co.nz/cdn/shop/files/Chalkrounded_WEB.jpg?v=1684441843"
+    img:"https://i.ytimg.com/vi/GVT3WUa-48Y/maxresdefault.jpg"
   },
   scissors:{
     name:"Scissors",
-    img:"https://m.media-amazon.com/images/I/51VWwCMeZOL._AC_UF894,1000_QL80_.jpg"
+    img:"https://i.ytimg.com/vi/tWZOEFvczzA/maxresdefault.jpg"
   },
   paper:{
     name:"Paper",
-    img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuXW8UgLnh5BGDf6ZcV32KHs5QF7CLMxau2w&s",
+    img:"https://media.techtribune.net/uploads/2023/03/0ebce5cb-29b2-4677-a6f4-c0c241119790-videoscreenshot-youtube-animerockpaperscissors-205.jpg",
   },
 };
 
 function App() {
-  let [userSelect, setUserSelect] = useState(null)
+  const [userSelect, setUserSelect] = useState(null);
+  const [computerSelect, setComputerSelect] = useState(null);
+  const [userResult, setUserResult] = useState("");
+  const [computerResult, setComputerResult] = useState("");
 
   const play = (userChoice) => {
-    setUserSelect(choice[userChoice])
+    let computerChoice = randomChoice();
+
+    setUserSelect(choice[userChoice]);
+    setComputerSelect(computerChoice);
+
+    let result = judgement(choice[userChoice], computerChoice);
+    setUserResult(result);
+    setComputerResult(getComputerResult(result));
   }
+
+  const judgement=(user, computer)=>{
+
+    if(user.name === computer.name) {
+      return "tie"
+    } else if (user.name === "Rock") 
+      return computer.name === "Scissors" ? "win" : "lose"
+    else if (user.name === "Scissors") 
+      return computer.name === "Paper" ? "win" : "lose"
+    else if (user.name === "Paper") return computer.name === "Rock" ? "win" : "lose";
+  };
+
+  const getComputerResult=(userResult)=>{
+    if (userResult === "win") return "lose";
+    if (userResult === "lose") return "win";
+    return "tie";
+  }
+
+  const randomChoice=()=>{
+    let itemArray = Object.keys(choice); // 객체에 키값만 뽑아서 Array로 만들어 주는 함수다.
+    let randomItem = Math.floor(Math.random() * itemArray.length); 
+    let final = itemArray[randomItem];
+    return choice[final];
+  }
+
   return (
     <div>
       <div className='main'>
-        <Box title="you" item={userSelect}/>
-        {/* <Box title="computer"/> */}
+        <Box title="You" item={userSelect} result={userResult}/>
+        <Box title="Computer" item={computerSelect} result={computerResult}/>
       </div>
       <div className='main'>
-        <button onClick={() => play("scissors")}>가위</button>
-        <button onClick={() => play("rock")}>바위</button>
-        <button onClick={() => play("paper")}>보</button>
+        <button onClick={() => play("scissors")}>
+          <img src="https://www.seekpng.com/png/detail/111-1114370_rock-paper-scissors-rock-paper-scissors-clipart.png" alt="scissors" style={{ width: "50px", height: "50px" }}></img>
+        </button>
+        <button onClick={() => play("rock")}>
+          <img src="https://www.seekpng.com/png/detail/816-8161371_rock-paper-scissor-icon-png.png" alt="rock" style={{ width: "50px", height: "50px" }}></img>
+        </button>
+        <button onClick={() => play("paper")}>
+          <img src="https://image.pngaaa.com/772/3313772-middle.png" alt="paper" style={{ width: "50px", height: "50px" }}></img>
+        </button>
       </div>
+
+      <h2 className="result">{userResult}</h2>
     </div>
   );
 }
